@@ -14,6 +14,7 @@ class UrlController extends Controller
     private CodeService $codeService;
 
     private UrlService $urlService;
+
     public function __construct(CodeService $codeService, UrlService $urlService)
     {
         $this->codeService = $codeService;
@@ -22,11 +23,25 @@ class UrlController extends Controller
 
     public function shorten(UrlRequest $request): JsonResponse
     {
-        $validatedData = $request->validated();
-        $code = $this->codeService->generateUnique();
-        $this->urlService->storeUrl($validatedData['url'], $code);
+        try {
+            $validatedData = $request->validated();
+            $code = $this->codeService->generateUnique();
+            $this->urlService->storeUrl($validatedData['url'], $code);
 
-        return response()->json(['shortened_url' => url('/') . '/' . $code]);
+            return response()->json(['shortened_url' => url('/') . '/' . $code]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while shortening the URL.'], 500);
+        }
+    }
 
+    public function getVisitorsCount(string $code): JsonResponse
+    {
+        try {
+            $visitorsCount = $this->urlService->getVisitorsCount($code);
+
+            return response()->json(['visitors_count' => $visitorsCount]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while retrieving visitors count.'], 500);
+        }
     }
 }

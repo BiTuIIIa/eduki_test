@@ -15,8 +15,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::post('/shorten',[UrlController::class, 'shorten']);
+Route::post('/shorten', [UrlController::class, 'shorten']);
+Route::get('/visitors/{code}', [UrlController::class, 'getVisitorsCount']);

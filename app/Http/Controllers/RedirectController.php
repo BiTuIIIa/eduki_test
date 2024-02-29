@@ -16,8 +16,12 @@ class RedirectController extends Controller
 
     public function redirect(string $code): RedirectResponse
     {
-        $url = $this->urlService->addVisitors($code);
+        try {
+            $url = $this->urlService->addVisitors($code);
 
-        return redirect($url->original_url);
+            return redirect($url->original_url);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred while redirecting.');
+        }
     }
 }
